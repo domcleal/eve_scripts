@@ -14,6 +14,7 @@ fail('Set EVE_API_KEY environment variable') if ENV['EVE_API_KEY'].nil?
 
 char_id = ARGV[1]
 api = EAAL::API.new(ARGV[0], ENV['EVE_API_KEY'], 'char')
+time = Time.now.to_i
 
 api.PlanetaryColonies(:characterID => char_id).colonies.each do |colony|
   csv = "#{colony.planetID}.csv"
@@ -21,9 +22,10 @@ api.PlanetaryColonies(:characterID => char_id).colonies.each do |colony|
     file = File.read(csv).lines.map { |l| l.chomp }.to_a
     headers = file.shift.split(',')
     quantities = [0]*headers.size
+    quantities[0] = time
   else
     headers = ['time']
-    quantities = [Time.now.to_i]
+    quantities = [time]
   end
 
   api.PlanetaryPins(:characterID => char_id, :planetID => colony.planetID).pins.each do |pin|
